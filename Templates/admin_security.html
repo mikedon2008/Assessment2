@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Verification</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .security-box { background: #ffebee; border: 3px solid #c62828; padding: 30px; border-radius: 15px; }
+        h1 { color: #c62828; }
+        button { background: #d32f2f; font-size: 1.2em; padding: 15px 30px; }
+    </style>
+</head>
+<body>
+<div class="box security-box">
+    <h1>🔐 SUPER ADMIN VERIFICATION</h1>
+    <p><strong>Only the real admin can pass...</strong></p>
+    
+    {% if blocked %}
+    <h2 style="color:red;">🚫 YOU ARE NOT THE ADMIN. BLOCKED!</h2>
+    <a href="/userhome"><button>Back</button></a>
+    {% else %}
+    <form method="post">
+        <p><strong>What's my favourite soccer player?</strong></p>
+        <label><input type="radio" name="answer" value="A" required> A. Messi</label><br><br>
+        <label><input type="radio" name="answer" value="B"> B. Ronaldo</label><br><br>
+        <label><input type="radio" name="answer" value="C"> C. Otto</label><br><br>
+        <label><input type=radio name=answer value=D> <strong>D. Lawrence</strong></label><br><br>
+        
+        <button type="submit">Submit Answer</button>
+    </form>
+    {% endif %}
+</div>
+</body>
+</html>

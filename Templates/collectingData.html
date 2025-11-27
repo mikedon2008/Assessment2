@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>World Geography Quiz</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div class="box">
+    <h1>World Geography Quiz</h1>
+    <p>Test your knowledge of countries, capitals, landmarks and more!</p>
+
+    {% if not submitted %}
+    <form method="post">
+        <ol style="line-height: 2.4;">
+            <li>What is the capital of Australia?<br>
+                <select name="q0" required><option value="0">Sydney</option><option value="1">Melbourne</option><option value="2">Canberra</option><option value="3">Brisbane</option></select></li><br>
+            <li>Which continent has the most desert area?<br>
+                <select name="q1" required><option value="0">Australia</option><option value="1">Africa</option><option value="2">Asia</option><option value="3">Antarctica</option></select></li><br>
+            <li>The Great Wall is located in which country?<br>
+                <select name="q2" required><option value="0">Japan</option><option value="1">China</option><option value="2">India</option><option value="3">Mongolia</option></select></li><br>
+            <li>Which is the largest continent by land area?<br>
+                <select name="q3" required><option value="0">Africa</option><option value="1">Asia</option><option value="2">North America</option><option value="3">Europe</option></select></li><br>
+            <li>What is the longest river in the world?<br>
+                <select name="q4" required><option value="0">Amazon</option><option value="1">Nile</option><option value="2">Yangtze</option><option value="3">Mississippi</option></select></li><br>
+            <li>Which country is known as the "Land of the Rising Sun"?<br>
+                <select name="q5" required><option value="0">China</option><option value="1">Japan</option><option value="2">South Korea</option><option value="3">Thailand</option></select></li><br>
+            <li>Mount Everest is located in which mountain range?<br>
+                <select name="q6" required><option value="0">Andes</option><option value="1">Rockies</option><option value="2">Himalayas</option><option value="3">Alps</option></select></li><br>
+            <li>Which African country has the most pyramids?<br>
+                <select name="q7" required><option value="0">Egypt</option><option value="1">Sudan</option><option value="2">Libya</option><option value="3">Algeria</option></select></li><br>
+            <li>Which ocean is generally the warmest?<br>
+                <select name="q8" required><option value="0">Atlantic</option><option value="1">Pacific</option><option value="2">Indian</option><option value="3">Arctic</option></select></li><br>
+            <li>What is the smallest country in the world by land area?<br>
+                <select name="q9" required><option value="0">Monaco</option><option value="1">Vatican City</option><option value="2">San Marino</option><option value="3">Liechtenstein</option></select></li><br>
+        </ol>
+        <br><br>
+        <button type="submit">Submit Quiz</button> | <a href="/userhome">Back</a>
+    </form>
+
+    {% else %}
+    <h2>Quiz Complete!</h2>
+    <p><strong>Your score: {{ score }}/10</strong> → {{ level }}</p>
+    <p><strong>Personal Best: {{ high_score }}/10</strong></p>
+
+    {% if wrong_questions %}
+    <h3>Questions you got wrong:</h3>
+    <ul>
+        {% for q in wrong_questions %}
+        <li><strong>Q{{ q.num }}:</strong> You → "{{ q.your_answer }}", Correct → <strong>"{{ q.correct_answer }}"</strong></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p style="color:green;font-size:1.5em;">Perfect score! You're amazing!</p>
+    {% endif %}
+
+    <br>
+    <a href="/collectingdata"><button>Take Quiz Again</button></a> |
+    <a href="/userhome"><button>Back to Dashboard</button></a>
+
+    <!-- ONLY SHOW CHALLENGE IF THEY GOT 10/10 -->
+    {% if score == 10 %}
+    <script>
+        setTimeout(function() {
+            if (confirm("You got 10/10! Would you dare to challenge yourself with 10 SUPER HARD geography questions?")) {
+                window.location.href = "/advanced_quiz";
+            }
+        }, 800);
+    </script>
+    {% endif %}
+
+    {% endif %}
+</div>
+</body>
+</html>

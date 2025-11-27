@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><title>Admin Panel</title><link rel="stylesheet" href="/static/styles.css"></head>
+<body>
+<div class="box">
+  <h1>Admin Dashboard</h1>
+  <a href="/logout">Logout</a>
+  <hr>
+  <h2>All User Records</h2>
+  <ul>
+    {% for r in records %}
+    <li>#{{ r[0] }} | {{ r[1] }} | Score: {{ r[2] }} | Level: {{ r[3] }} | {{ r[4] }}</li>
+    {% endfor %}
+  </ul>
+</div>
+</body>
+</html>

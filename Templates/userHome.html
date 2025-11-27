@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head><title>My Records</title><link rel="stylesheet" href="/static/styles.css"></head>
+<body>
+<div class="box">
+  <h1>Welcome, {{ username }}!</h1>
+  <a href="/collectingdata">Take New Test</a> | <a href="/logout">Logout</a>
+  <hr>
+  <h2>My Test History</h2>
+  {% if records %}
+  <ul>
+    {% for r in records %}
+    <li>{{ r[2] }} → Score: {{ r[0] }} ({{ r[1] }})</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No records yet.</p>
+  {% endif %}
+</div>
+</body>
+</html>

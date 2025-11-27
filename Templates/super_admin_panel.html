@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SUPER ADMIN PANEL</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #1976d2; color: white; }
+        tr:nth-child(even) { background: #f2f2f2; }
+        .secret { background: #ff1744; color: white; padding: 20px; border-radius: 10px; text-align: center; font-size: 1.5em; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <div class="secret">🔒 SUPER ADMIN PANEL - EYES ONLY 🔒</div>
+    <h1>All User Data ({{ today }})</h1>
+    
+    <table>
+        <tr>
+            <th>Username</th>
+            <th>Password</th>
+            <th>Best Score</th>
+            <th>Total Attempts</th>
+            <th>Access Today</th>
+            <th>Last Login</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td><strong>{{ user[0] }}</strong></td>
+            <td>{{ user[1] }}</td>
+            <td>{{ user[3] if user[3] else 0 }}/10</td>
+            <td>{{ user[2] }}</td>
+            <td><strong>{{ daily_access.get(user[0], 0) }}</strong></td>
+            <td>{{ user[4] or "Never" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <br>
+    <a href="/userhome"><button>Back to Dashboard</button></a>
+</div>
+</body>
+</html>
