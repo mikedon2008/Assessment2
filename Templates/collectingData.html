@@ -1,73 +1,75 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>World Geography Quiz</title>
+    <title>MIKEDON GEOGRAPHY QUIZ</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        body { background: linear-gradient(135deg, #e3f2fd, #bbdefb); padding: 20px; }
+        .box { max-width: 1100px; margin: 30px auto; background: white; padding: 50px; border-radius: 30px;
+               box-shadow: 0 20px 60px rgba(30,144,255,0.3); border: 6px solid #1e88e5; text-align: center; }
+        h1 { color: #1565c0; font-size: 4em; margin-bottom: 20px; }
+        li { background: #f5fbff; padding: 25px; margin: 20px 0; border-radius: 18px; border-left: 8px solid #42a5f5;
+             text-align: left; font-size: 1.3em; line-height: 1.6; }
+        select { width: 100%; padding: 15px; font-size: 1.2em; border: 2px solid #90caf9; border-radius: 12px; margin-top: 10px; }
+        button { background: #1e88e5; color: white; padding: 20px 60px; font-size: 1.6em; border: none;
+                 border-radius: 50px; cursor: pointer; margin: 20px 10px; box-shadow: 0 10px 30px rgba(30,144,255,0.4); }
+        button:hover { background: #1565c0; transform: translateY(-3px); }
+        .wrong { color: red; font-weight: bold; }
+        .correct { color: green; font-weight: bold; }
+        .perfect { color: gold; font-size: 2.8em; text-shadow: 0 0 30px gold; font-weight: bold; }
+    </style>
 </head>
 <body>
 <div class="box">
-    <h1>World Geography Quiz</h1>
-    <p>Test your knowledge of countries, capitals, landmarks and more!</p>
+    <h1>WORLD GEOGRAPHY QUIZ</h1>
+    <p style="font-size:1.6em; color:#0d47a1;">Test your knowledge of countries, capitals, landmarks and more!</p>
 
     {% if not submitted %}
     <form method="post">
-        <ol style="line-height: 2.4;">
-            <li>What is the capital of Australia?<br>
-                <select name="q0" required><option value="0">Sydney</option><option value="1">Melbourne</option><option value="2">Canberra</option><option value="3">Brisbane</option></select></li><br>
-            <li>Which continent has the most desert area?<br>
-                <select name="q1" required><option value="0">Australia</option><option value="1">Africa</option><option value="2">Asia</option><option value="3">Antarctica</option></select></li><br>
-            <li>The Great Wall is located in which country?<br>
-                <select name="q2" required><option value="0">Japan</option><option value="1">China</option><option value="2">India</option><option value="3">Mongolia</option></select></li><br>
-            <li>Which is the largest continent by land area?<br>
-                <select name="q3" required><option value="0">Africa</option><option value="1">Asia</option><option value="2">North America</option><option value="3">Europe</option></select></li><br>
-            <li>What is the longest river in the world?<br>
-                <select name="q4" required><option value="0">Amazon</option><option value="1">Nile</option><option value="2">Yangtze</option><option value="3">Mississippi</option></select></li><br>
-            <li>Which country is known as the "Land of the Rising Sun"?<br>
-                <select name="q5" required><option value="0">China</option><option value="1">Japan</option><option value="2">South Korea</option><option value="3">Thailand</option></select></li><br>
-            <li>Mount Everest is located in which mountain range?<br>
-                <select name="q6" required><option value="0">Andes</option><option value="1">Rockies</option><option value="2">Himalayas</option><option value="3">Alps</option></select></li><br>
-            <li>Which African country has the most pyramids?<br>
-                <select name="q7" required><option value="0">Egypt</option><option value="1">Sudan</option><option value="2">Libya</option><option value="3">Algeria</option></select></li><br>
-            <li>Which ocean is generally the warmest?<br>
-                <select name="q8" required><option value="0">Atlantic</option><option value="1">Pacific</option><option value="2">Indian</option><option value="3">Arctic</option></select></li><br>
-            <li>What is the smallest country in the world by land area?<br>
-                <select name="q9" required><option value="0">Monaco</option><option value="1">Vatican City</option><option value="2">San Marino</option><option value="3">Liechtenstein</option></select></li><br>
+        <ol>
+            <li>What is the capital of Australia?<br><select name="q0" required><option value="0">Sydney</option><option value="1">Melbourne</option><option value="2">Canberra</option><option value="3">Brisbane</option></select></li>
+            <li>Which continent has the most desert area?<br><select name="q1" required><option value="0">Asia</option><option value="1">Africa</option><option value="2">Australia</option><option value="3">Antarctica</option></select></li>
+            <li>The Great Wall is in which country?<br><select name="q2" required><option value="0">Japan</option><option value="1">China</option><option value="2">India</option><option value="3">Mongolia</option></select></li>
+            <li>Which country has the longest coastline in the world?<br><select name="q3" required><option value="0">Australia</option><option value="1">Indonesia</option><option value="2">Canada</option><option value="3">Russia</option></select></li>
+            <li>What is the smallest country in the world by land area?<br><select name="q4" required><option value="0">Monaco</option><option value="1">Vatican City</option><option value="2">San Marino</option><option value="3">Liechtenstein</option></select></li>
+            <li>Which African country is known as the "Pearl of Africa"?<br><select name="q5" required><option value="0">Kenya</option><option value="1">Uganda</option><option value="2">Tanzania</option><option value="3">Rwanda</option></select></li>
+            <li>Mount Everest is located in which two countries?<br><select name="q6" required><option value="0">India & China</option><option value="1">Nepal & India</option><option value="2">Nepal & China</option><option value="3">Bhutan & China</option></select></li>
+            <li>Which is the largest ocean on Earth?<br><select name="q7" required><option value="0">Atlantic</option><option value="1">Indian</option><option value="2">Pacific</option><option value="3">Arctic</option></select></li>
+            <li>What is the capital city of Brazil?<br><select name="q8" required><option value="0">Rio de Janeiro</option><option value="1">São Paulo</option><option value="2">Brasília</option><option value="3">Salvador</option></select></li>
+            <li>Which country is home to the kangaroos and koalas?<br><select name="q9" required><option value="0">New Zealand</option><option value="1">Australia</option><option value="2">South Africa</option><option value="3">Indonesia</option></select></li>
         </ol>
         <br><br>
-        <button type="submit">Submit Quiz</button> | <a href="/userhome">Back</a>
+        <button type="submit">SUBMIT QUIZ</button>
+        <a href="/userhome"><button type="button">Back to Home</button></a>
     </form>
 
     {% else %}
-    <h2>Quiz Complete!</h2>
-    <p><strong>Your score: {{ score }}/10</strong> → {{ level }}</p>
-    <p><strong>Personal Best: {{ high_score }}/10</strong></p>
+    <h2 style="font-size:3.5em; color:#1565c0;">Quiz Complete!</h2>
+    <p style="font-size:3em; color:#0d47a1;"><strong>Your Score: {{ score }}/10</strong></p>
+    <p style="font-size:2.5em; color:#1976d2;"><strong>Level: {{ level }}</strong></p>
+    <p style="font-size:2em; color:#1565c0;"><strong>Personal Best: {{ high_score }}/10</strong></p>
+
+    {% if perfect %}
+    <div class="perfect">
+        PERFECT SCORE!<br>
+        <a href="/advanced_quiz" style="color:red; font-size:1.2em; text-decoration:none;">
+            UNLOCKED: ADVANCED CHALLENGE →
+        </a>
+    </div>
+    {% endif %}
 
     {% if wrong_questions %}
-    <h3>Questions you got wrong:</h3>
-    <ul>
+    <h3 style="color:#d32f2f; font-size:2em;">Questions You Got Wrong:</h3>
+    <div style="background:#fff5f5; padding:30px; border-radius:20px; text-align:left; font-size:1.4em; margin:20px;">
         {% for q in wrong_questions %}
-        <li><strong>Q{{ q.num }}:</strong> You → "{{ q.your_answer }}", Correct → <strong>"{{ q.correct_answer }}"</strong></li>
+        <p>Q{{ q.num }}: <span class="wrong">You: {{ q.your_answer }}</span> → <span class="correct">Correct: {{ q.correct_answer }}</span></p>
         {% endfor %}
-    </ul>
-    {% else %}
-    <p style="color:green;font-size:1.5em;">Perfect score! You're amazing!</p>
+    </div>
     {% endif %}
 
-    <br>
-    <a href="/collectingdata"><button>Take Quiz Again</button></a> |
+    <br><br>
+    <a href="/collectingdata"><button>Take Quiz Again</button></a>
     <a href="/userhome"><button>Back to Dashboard</button></a>
-
-    <!-- ONLY SHOW CHALLENGE IF THEY GOT 10/10 -->
-    {% if score == 10 %}
-    <script>
-        setTimeout(function() {
-            if (confirm("You got 10/10! Would you dare to challenge yourself with 10 SUPER HARD geography questions?")) {
-                window.location.href = "/advanced_quiz";
-            }
-        }, 800);
-    </script>
-    {% endif %}
-
     {% endif %}
 </div>
 </body>

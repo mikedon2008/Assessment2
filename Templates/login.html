@@ -1,18 +1,28 @@
 <!DOCTYPE html>
 <html>
-<head><title>Login</title><link rel="stylesheet" href="/static/styles.css"></head>
+<head>
+    <title>MIKEDON GEOGRAPHY QUIZ - Login</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
 <body>
 <div class="box">
-  <h1>MindCheck Login</h1>
-  <form method="post">
-    Username: <input name="username" required><br><br>
-    Password: <input type="password" name="password" required><br><br>
-    <button type="submit">Login</button>
-  </form>
-  <p>No account? <a href="/signup">Sign Up</a></p>
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}<p style="color:red;">{{ messages[0] }}</p>{% endif %}
-  {% endwith %}
+    <h1>MIKEDON GEOGRAPHY QUIZ</h1>
+    <h2>Login</h2>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <p style="color:red;font-weight:bold;">{{ messages[0] }}</p>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post">
+        Username: <input type="text" name="username" required><br><br>
+        Password: <input type="password" name="password" required><br><br>
+        <button type="submit">Login</button>
+    </form>
+
+    <p>No account? <a href="/signup">Sign Up</a></p>
+    <p><a href="/userhome">Back to Home</a></p>
 </div>
 </body>
 </html>

@@ -1,21 +1,36 @@
 <!DOCTYPE html>
 <html>
-<head><title>My Records</title><link rel="stylesheet" href="/static/styles.css"></head>
+<head>
+    <title>MIKEDON GEOGRAPHY QUIZ - Home</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
 <body>
 <div class="box">
-  <h1>Welcome, {{ username }}!</h1>
-  <a href="/collectingdata">Take New Test</a> | <a href="/logout">Logout</a>
-  <hr>
-  <h2>My Test History</h2>
-  {% if records %}
-  <ul>
-    {% for r in records %}
-    <li>{{ r[2] }} → Score: {{ r[0] }} ({{ r[1] }})</li>
-    {% endfor %}
-  </ul>
-  {% else %}
-  <p>No records yet.</p>
-  {% endif %}
+    <h1>MIKEDON GEOGRAPHY QUIZ</h1>
+    <h2>Welcome, {{ username }}!</h2>
+
+    <p><a href="/collectingdata"><button>Start Geography Quiz</button></a></p>
+    <p><a href="/logout"><button>Logout</button></a></p>
+
+    {% if records %}
+    <h3>Your Past Scores</h3>
+    <table>
+        <tr>
+            <th>Score</th>
+            <th>Level</th>
+            <th>Date & Time</th>
+        </tr>
+        {% for r in records %}
+        <tr>
+            <td>{{ r[0] }}/10</td>
+            <td>{{ r[1] }}</td>
+            <td>{{ r[2] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No quiz taken yet. Start now!</p>
+    {% endif %}
 </div>
 </body>
 </html>
