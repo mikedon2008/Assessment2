@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.secret_key = 'mikedon-geography-quiz-final-2025'
 
 # ========================================
-# DATABASE SETUP — NOW WITH time_taken COLUMN
+# DATABASE SETUP 
 # ========================================
 def init_db():
     conn = sqlite3.connect('database.db')
@@ -28,7 +28,7 @@ def init_db():
                  score INTEGER,
                  level TEXT,
                  timestamp TEXT,
-                 time_taken INTEGER DEFAULT 0)''')  # NEW: time in seconds
+                 time_taken INTEGER DEFAULT 0)''')  
     c.execute('INSERT OR IGNORE INTO users (username, password, is_admin) VALUES (?, ?, ?)',
               ('nguyen.don225@education.nsw.gov.au', 'Duc10042008@', 1))
     conn.commit()
