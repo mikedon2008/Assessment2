@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
-from datetime import datetime, date
+from datetime import datetime
 import os
+
+# Only import waitress when on Render.com
 if os.environ.get('RENDER'):
     from waitress import serve
 
@@ -9,7 +11,7 @@ app = Flask(__name__)
 app.secret_key = 'mikedon-geography-quiz-final-2025'
 
 # ========================================
-# DATABASE SETUP
+# DATABASE SETUP — NOW WITH time_taken COLUMN
 # ========================================
 def init_db():
     conn = sqlite3.connect('database.db')
@@ -25,14 +27,15 @@ def init_db():
                  user_id INTEGER,
                  score INTEGER,
                  level TEXT,
-                 timestamp TEXT)''')
+                 timestamp TEXT,
+                 time_taken INTEGER DEFAULT 0)''')  # NEW: time in seconds
     c.execute('INSERT OR IGNORE INTO users (username, password, is_admin) VALUES (?, ?, ?)',
               ('nguyen.don225@education.nsw.gov.au', 'Duc10042008@', 1))
     conn.commit()
     conn.close()
 
 # ========================================
-# ALL YOUR ROUTES — 100% WORKING
+# ALL ROUTES
 # ========================================
 @app.route('/')
 def index():
@@ -48,11 +51,11 @@ def signup():
         try:
             c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
             conn.commit()
-            flash("Account created! You can now log in.")
+            flash("Account created!")
             conn.close()
             return redirect(url_for('login'))
         except sqlite3.IntegrityError:
-            flash("Username already taken!")
+            flash("Username taken!")
         conn.close()
     return render_template('signUp.html')
 
@@ -73,7 +76,7 @@ def login():
             if username == 'nguyen.don225@education.nsw.gov.au':
                 return redirect(url_for('admin_security'))
             return redirect(url_for('user_home'))
-        flash("Wrong username or password!")
+        flash("Wrong username/password")
     return render_template('login.html')
 
 @app.route('/admin_security', methods=['GET', 'POST'])
@@ -93,7 +96,9 @@ def super_admin_panel():
         return redirect(url_for('user_home'))
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("SELECT r.id, u.username, r.score, r.level, r.timestamp FROM records r JOIN users u ON r.user_id = u.id ORDER BY r.timestamp DESC")
+    c.execute("""SELECT r.id, u.username, r.score, r.level, r.timestamp, r.time_taken 
+                 FROM records r JOIN users u ON r.user_id = u.id 
+                 ORDER BY r.timestamp DESC""")
     records = c.fetchall()
     conn.close()
     return render_template('super_admin_panel.html', records=records)
@@ -114,7 +119,9 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-# NORMAL QUIZ — PERFECT
+# ========================================
+# NORMAL QUIZ WITH TIMER
+# ========================================
 @app.route('/collectingdata', methods=['GET', 'POST'])
 def collecting_data():
     if 'user_id' not in session:
@@ -134,6 +141,10 @@ def collecting_data():
         ["New Zealand", "Australia", "South Africa", "Indonesia"]
     ]
 
+    # Start timer when quiz loads
+    if request.method == 'GET':
+        session['quiz_start_time'] = datetime.now().timestamp()
+
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
     c.execute("SELECT MAX(score) FROM records WHERE user_id=?", (session['user_id'],))
@@ -141,6 +152,10 @@ def collecting_data():
     high_score = best if best else 0
 
     if request.method == 'POST':
+        # Calculate time taken
+        start_time = session.get('quiz_start_time', datetime.now().timestamp())
+        time_taken = int(datetime.now().timestamp() - start_time)
+
         score = 0
         wrong_questions = []
         for i in range(10):
@@ -157,19 +172,25 @@ def collecting_data():
         level = "Geography God" if score == 10 else "Expert" if score >= 8 else "Good" if score >= 6 else "Beginner"
         perfect = (score == 10)
 
-        c.execute("INSERT INTO records (user_id, score, level, timestamp) VALUES (?,?,?,?)",
-                  (session['user_id'], score, level, datetime.now().strftime("%Y-%m-%d %H:%M")))
+        c.execute("INSERT INTO records (user_id, score, level, timestamp, time_taken) VALUES (?,?,?,?,?)",
+                  (session['user_id'], score, level, datetime.now().strftime("%Y-%m-%d %H:%M"), time_taken))
         conn.commit()
         conn.close()
 
+        # Clear timer from session
+        session.pop('quiz_start_time', None)
+
         return render_template('collectingData.html',
                                submitted=True, score=score, level=level, perfect=perfect,
-                               wrong_questions=wrong_questions, high_score=max(high_score, score))
+                               wrong_questions=wrong_questions, high_score=max(high_score, score),
+                               time_taken=time_taken)
 
     conn.close()
     return render_template('collectingData.html', submitted=False, high_score=high_score)
 
-# ADVANCED QUIZ — PERFECT
+# ========================================
+# ADVANCED QUIZ WITH TIMER
+# ========================================
 @app.route('/advanced_quiz', methods=['GET', 'POST'])
 def advanced_quiz():
     if 'user_id' not in session:
@@ -189,6 +210,9 @@ def advanced_quiz():
         ["Sahara", "Arabian", "Gobi", "Kalahari"]
     ]
 
+    if request.method == 'GET':
+        session['quiz_start_time'] = datetime.now().timestamp()
+
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
     c.execute("SELECT MAX(score) FROM records WHERE user_id=? AND (level LIKE '%Advanced%' OR level LIKE '%GOD%' OR level LIKE '%Master%')", (session['user_id'],))
@@ -196,6 +220,9 @@ def advanced_quiz():
     high_score = best if best else 0
 
     if request.method == 'POST':
+        start_time = session.get('quiz_start_time', datetime.now().timestamp())
+        time_taken = int(datetime.now().timestamp() - start_time)
+
         score = 0
         wrong_questions = []
         for i in range(10):
@@ -211,30 +238,29 @@ def advanced_quiz():
 
         level = "GEOGRAPHY GOD" if score == 10 else "Master" if score >= 8 else "Advanced Challenger"
 
-        c.execute("INSERT INTO records (user_id, score, level, timestamp) VALUES (?,?,?,?)",
-                  (session['user_id'], score, level + " (Advanced)", datetime.now().strftime("%Y-%m-%d %H:%M")))
+        c.execute("INSERT INTO records (user_id, score, level, timestamp, time_taken) VALUES (?,?,?,?,?)",
+                  (session['user_id'], score, level + " (Advanced)", datetime.now().strftime("%Y-%m-%d %H:%M"), time_taken))
         conn.commit()
         conn.close()
 
+        session.pop('quiz_start_time', None)
+
         return render_template('advanced_quiz.html',
                                submitted=True, score=score, level=level,
-                               wrong_questions=wrong_questions, high_score=max(high_score, score))
+                               wrong_questions=wrong_questions, high_score=max(high_score, score),
+                               time_taken=time_taken)
 
     conn.close()
     return render_template('advanced_quiz.html', submitted=False, high_score=high_score)
 
 # ========================================
-# RUN APP — WORKS EVERYWHERE
+# RUN APP — WORKS ON MAC & RENDER.COM
 # ========================================
 if __name__ == '__main__':
     init_db()
-    
-    # Running on your Mac
     if not os.environ.get('RENDER'):
-        print("Running locally on Mac — using Flask debug server")
+        print("Running locally — Flask debug server")
         app.run(host='0.0.0.0', port=8000, debug=True)
-    
-    # Running on Render.com
     else:
-        print("Deployed on Render.com — using Waitress production server")
+        print("Deployed on Render.com — using Waitress")
         serve(app, host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))

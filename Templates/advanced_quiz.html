@@ -1,71 +1,125 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ADVANCED CHALLENGE - MIKEDON</title>
+    <title>ADVANCED GEOGRAPHY CHALLENGE</title>
     <link rel="stylesheet" href="/static/styles.css">
     <style>
         body { background: linear-gradient(135deg, #ffebee, #ffcdd2); padding: 20px; font-family: Arial; }
         .box { max-width: 1100px; margin: 30px auto; background: white; padding: 50px; border-radius: 30px;
                box-shadow: 0 20px 60px rgba(211,47,47,0.3); border: 6px solid #d32f2f; text-align: center; }
-        h1 { color: #b71c1c; font-size: 4em; }
+        h1 { color: #b71c1c; font-size: 4em; margin-bottom: 20px; }
         li { background: #fff5f5; padding: 25px; margin: 20px 0; border-radius: 18px; border-left: 8px solid #e53935;
-             text-align: left; font-size: 1.3em; }
-        button { background: #d32f2f; color: white; padding: 18px 50px; font-size: 1.6em; border: none;
-                 border-radius: 50px; margin: 15px; cursor: pointer; }
+             text-align: left; font-size: 1.3em; line-height: 1.6; }
+        select { width: 100%; padding: 15px; font-size: 1.2em; border: 2px solid #ffcdd2; border-radius: 12px; margin-top: 10px; }
+        button { background: #d32f2f; color: white; padding: 20px 60px; font-size: 1.6em; border: none;
+                 border-radius: 50px; cursor: pointer; margin: 20px 10px; box-shadow: 0 10px 30px rgba(211,47,47,0.4); }
+        button:hover { background: #b71c1c; transform: translateY(-3px); }
         .wrong { color: red; font-weight: bold; }
         .correct { color: green; font-weight: bold; }
+        .perfect { color: gold; font-size: 3em; text-shadow: 0 0 30px gold; font-weight: bold; }
+        .time { color: #d32f2f; font-size: 2.2em; font-weight: bold; margin: 20px 0; }
+        #timer {
+            font-size: 3.8em;
+            font-weight: bold;
+            color: #b71c1c;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(183, 28, 28, 0.6);
+        }
+        #timer.warning { 
+            color: #8B0000; 
+            animation: pulse 0.8s infinite; 
+        }
+        @keyframes pulse { 
+            0% { transform: scale(1); } 
+            50% { transform: scale(1.15); } 
+            100% { transform: scale(1); } 
+        }
     </style>
 </head>
 <body>
 <div class="box">
     <h1>ADVANCED GEOGRAPHY CHALLENGE</h1>
-    <p style="font-size:2em;color:#b71c1c;">Only legends survive...</p>
-    <p style="font-size:1.8em;"><strong>Your Best: {{ high_score }}/10</strong></p>
+    <p style="font-size:1.8em; color:#b71c1c;">Only true legends survive this...</p>
+    <p style="font-size:2em; color:#8B0000;"><strong>Your Best: {{ high_score }}/10</strong></p>
+
+    <!-- LIVE 60-SECOND TIMER -->
+    <div id="timer">60</div>
+    <p style="font-size:1.5em; color:#d32f2f; font-weight:bold;">Time Remaining — Auto-submit at 0!</p>
 
     {% if not submitted %}
-    <form method="post">
+    <form method="post" id="quizForm">
         <ol>
             <li>Europe's highest mountain (Mount Elbrus) is in which country?<br>
-                <select name="q0" required><option value="0">Switzerland</option><option value="1">Italy</option><option value="2">Russia</option><option value="3">France</option></select></li>
+                <select name="q0" required><option value="">Select</option><option value="0">Switzerland</option><option value="1">Italy</option><option value="2">Russia</option><option value="3">France</option></select></li>
             <li>Which country has the most time zones (12)?<br>
-                <select name="q1" required><option value="0">Russia</option><option value="1">United States</option><option value="2">France</option><option value="3">China</option></select></li>
+                <select name="q1" required><option value="">Select</option><option value="0">Russia</option><option value="1">United States</option><option value="2">France</option><option value="3">China</option></select></li>
             <li>What is the deepest lake in the world?<br>
-                <select name="q2" required><option value="0">Caspian Sea</option><option value="1">Lake Baikal</option><option value="2">Lake Tanganyika</option><option value="3">Crater Lake</option></select></li>
+                <select name="q2" required><option value="">Select</option><option value="0">Caspian Sea</option><option value="1">Lake Baikal</option><option value="2">Lake Tanganyika</option><option value="3">Crater Lake</option></select></li>
             <li>Which river flows through the most countries (10)?<br>
-                <select name="q3" required><option value="0">Nile</option><option value="1">Amazon</option><option value="2">Danube</option><option value="3">Rhine</option></select></li>
+                <select name="q3" required><option value="">Select</option><option value="0">Nile</option><option value="1">Amazon</option><option value="2">Danube</option><option value="3">Rhine</option></select></li>
             <li>Which country borders both the Caspian Sea and Persian Gulf?<br>
-                <select name="q4" required><option value="0">Iraq</option><option value="1">Iran</option><option value="2">Azerbaijan</option><option value="3">Turkmenistan</option></select></li>
+                <select name="q4" required><option value="">Select</option><option value="0">Iraq</option><option value="1">Iran</option><option value="2">Azerbaijan</option><option value="3">Turkmenistan</option></select></li>
             <li>Which two countries are separated by the Diomede Islands?<br>
-                <select name="q5" required><option value="0">USA & Canada</option><option value="1">Russia & USA</option><option value="2">Japan & Russia</option><option value="3">Norway & Sweden</option></select></li>
+                <select name="q5" required><option value="">Select</option><option value="0">USA & Canada</option><option value="1">Russia & USA</option><option value="2">Japan & Russia</option><option value="3">Norway & Sweden</option></select></li>
             <li>What is the capital of Bhutan?<br>
-                <select name="q6" required><option value="0">Kathmandu</option><option value="1">Thimphu</option><option value="2">Ulaanbaatar</option><option value="3">Bandar Seri Begawan</option></select></li>
+                <select name="q6" required><option value="">Select</option><option value="0">Kathmandu</option><option value="1">Thimphu</option><option value="2">Ulaanbaatar</option><option value="3">Bandar Seri Begawan</option></select></li>
             <li>Which country is completely surrounded by South Africa?<br>
-                <select name="q7" required><option value="0">Eswatini</option><option value="1">Lesotho</option><option value="2">Namibia</option><option value="3">Botswana</option></select></li>
+                <select name="q7" required><option value="">Select</option><option value="0">Eswatini</option><option value="1">Lesotho</option><option value="2">Namibia</option><option value="3">Botswana</option></select></li>
             <li>What is the longest underwater mountain range?<br>
-                <select name="q8" required><option value="0">Andes</option><option value="1">Himalayas</option><option value="2">Mid-Atlantic Ridge</option><option value="3">Rockies</option></select></li>
+                <select name="q8" required><option value="">Select</option><option value="0">Andes</option><option value="1">Himalayas</option><option value="2">Mid-Atlantic Ridge</option><option value="3">Rockies</option></select></li>
             <li>Which is the largest hot desert?<br>
-                <select name="q9" required><option value="0">Sahara</option><option value="1">Arabian</option><option value="2">Gobi</option><option value="3">Kalahari</option></select></li>
+                <select name="q9" required><option value="">Select</option><option value="0">Sahara</option><option value="1">Arabian</option><option value="2">Gobi</option><option value="3">Kalahari</option></select></li>
         </ol>
         <br><br>
         <button type="submit">SUBMIT CHALLENGE</button>
-        <a href="/userhome"><button type="button">Back</button></a>
+        <a href="/userhome"><button type="button">Back to Dashboard</button></a>
     </form>
 
+    <script>
+        let timeLeft = 60;
+        const timerDisplay = document.getElementById('timer');
+        const form = document.getElementById('quizForm');
+
+        const countdown = setInterval(() => {
+            timeLeft--;
+            timerDisplay.textContent = timeLeft;
+
+            if (timeLeft <= 10) {
+                timerDisplay.classList.add('warning');
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                alert("TIME'S UP! Submitting your Advanced Challenge...");
+                form.submit();
+            }
+        }, 1000);
+    </script>
+
     {% else %}
-    <h2 style="font-size:3.5em;color:#d32f2f;">Score: {{ score }}/10</h2>
-    <p style="font-size:2em;"><strong>Level: {{ level }}</strong></p>
-    <p style="font-size:1.8em;"><strong>Advanced Best: {{ high_score }}/10</strong></p>
+    <h2 style="font-size:3.5em; color:#d32f2f;">Challenge Complete!</h2>
+    <p style="font-size:3em; color:#b71c1c;"><strong>Score: {{ score }}/10 → {{ level }}</strong></p>
+    <p style="font-size:2.5em; color:#8B0000;"><strong>Advanced Best: {{ high_score }}/10</strong></p>
+
+    <!-- TIME TAKEN -->
+    <p class="time">Time Taken: {{ time_taken }} seconds</p>
+
+    {% if score == 10 %}
+    <div class="perfect">PERFECT SCORE! YOU ARE A TRUE GEOGRAPHY GOD!</div>
+    {% endif %}
 
     {% if wrong_questions %}
-    <h3 style="color:#b71c1c;">Wrong Answers:</h3>
-    {% for q in wrong_questions %}
-    <p>Q{{ q.num }}: <span class="wrong">You: {{ q.your_answer }}</span> → <span class="correct">Correct: {{ q.correct_answer }}</span></p>
-    {% endfor %}
+    <h3 style="color:#b71c1c; font-size:2em;">Questions You Got Wrong:</h3>
+    <div style="background:#fff5f5; padding:30px; border-radius:20px; text-align:left; font-size:1.4em;">
+        {% for q in wrong_questions %}
+        <p>Q{{ q.num }}: <span class="wrong">You: {{ q.your_answer }}</span> → <span class="correct">Correct: {{ q.correct_answer }}</span></p>
+        {% endfor %}
+    </div>
     {% endif %}
 
     <br><br>
     <a href="/advanced_quiz"><button>Try Again</button></a>
-    <a href="/userhome"><button>Dashboard</button></a>
+    <a href="/userhome"><button>Back to Dashboard</button></a>
     {% endif %}
 </div>
 </body>

@@ -4,19 +4,36 @@
     <title>MIKEDON GEOGRAPHY QUIZ</title>
     <link rel="stylesheet" href="/static/styles.css">
     <style>
-        body { background: linear-gradient(135deg, #e3f2fd, #bbdefb); padding: 20px; }
+        body { background: linear-gradient(135deg, #e3f2fd, #bbdefb); padding: 20px; font-family: Arial; }
+
         .box { max-width: 1100px; margin: 30px auto; background: white; padding: 50px; border-radius: 30px;
                box-shadow: 0 20px 60px rgba(30,144,255,0.3); border: 6px solid #1e88e5; text-align: center; }
+
         h1 { color: #1565c0; font-size: 4em; margin-bottom: 20px; }
+
         li { background: #f5fbff; padding: 25px; margin: 20px 0; border-radius: 18px; border-left: 8px solid #42a5f5;
              text-align: left; font-size: 1.3em; line-height: 1.6; }
         select { width: 100%; padding: 15px; font-size: 1.2em; border: 2px solid #90caf9; border-radius: 12px; margin-top: 10px; }
+
         button { background: #1e88e5; color: white; padding: 20px 60px; font-size: 1.6em; border: none;
                  border-radius: 50px; cursor: pointer; margin: 20px 10px; box-shadow: 0 10px 30px rgba(30,144,255,0.4); }
+
         button:hover { background: #1565c0; transform: translateY(-3px); }
         .wrong { color: red; font-weight: bold; }
         .correct { color: green; font-weight: bold; }
-        .perfect { color: gold; font-size: 2.8em; text-shadow: 0 0 30px gold; font-weight: bold; }
+
+        .perfect { color: gold; font-size: 3em; text-shadow: 0 0 30px gold; font-weight: bold; }
+        .time { color: #d32f2f; font-size: 2.2em; font-weight: bold; margin: 20px 0; }
+        #timer {
+            
+            font-size: 3.5em;
+            font-weight: bold;
+            color: #1976d2;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(25, 118, 210, 0.5);
+        }
+        #timer.warning { color: #d32f2f; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -24,24 +41,49 @@
     <h1>WORLD GEOGRAPHY QUIZ</h1>
     <p style="font-size:1.6em; color:#0d47a1;">Test your knowledge of countries, capitals, landmarks and more!</p>
 
+    <!-- LIVE TIMER -->
+    <div id="timer">60</div>
+    <p style="font-size:1.4em; color:#d32f2f;">Time Remaining (Auto-submit at 0)</p>
+
     {% if not submitted %}
-    <form method="post">
+    <form method="post" id="quizForm">
         <ol>
-            <li>What is the capital of Australia?<br><select name="q0" required><option value="0">Sydney</option><option value="1">Melbourne</option><option value="2">Canberra</option><option value="3">Brisbane</option></select></li>
-            <li>Which continent has the most desert area?<br><select name="q1" required><option value="0">Asia</option><option value="1">Africa</option><option value="2">Australia</option><option value="3">Antarctica</option></select></li>
-            <li>The Great Wall is in which country?<br><select name="q2" required><option value="0">Japan</option><option value="1">China</option><option value="2">India</option><option value="3">Mongolia</option></select></li>
-            <li>Which country has the longest coastline in the world?<br><select name="q3" required><option value="0">Australia</option><option value="1">Indonesia</option><option value="2">Canada</option><option value="3">Russia</option></select></li>
-            <li>What is the smallest country in the world by land area?<br><select name="q4" required><option value="0">Monaco</option><option value="1">Vatican City</option><option value="2">San Marino</option><option value="3">Liechtenstein</option></select></li>
-            <li>Which African country is known as the "Pearl of Africa"?<br><select name="q5" required><option value="0">Kenya</option><option value="1">Uganda</option><option value="2">Tanzania</option><option value="3">Rwanda</option></select></li>
-            <li>Mount Everest is located in which two countries?<br><select name="q6" required><option value="0">India & China</option><option value="1">Nepal & India</option><option value="2">Nepal & China</option><option value="3">Bhutan & China</option></select></li>
-            <li>Which is the largest ocean on Earth?<br><select name="q7" required><option value="0">Atlantic</option><option value="1">Indian</option><option value="2">Pacific</option><option value="3">Arctic</option></select></li>
-            <li>What is the capital city of Brazil?<br><select name="q8" required><option value="0">Rio de Janeiro</option><option value="1">São Paulo</option><option value="2">Brasília</option><option value="3">Salvador</option></select></li>
-            <li>Which country is home to the kangaroos and koalas?<br><select name="q9" required><option value="0">New Zealand</option><option value="1">Australia</option><option value="2">South Africa</option><option value="3">Indonesia</option></select></li>
+            <li>What is the capital of Australia?<br><select name="q0" required><option value="">Select</option><option value="0">Sydney</option><option value="1">Melbourne</option><option value="2">Canberra</option><option value="3">Brisbane</option></select></li>
+            <li>Which continent has the most desert area?<br><select name="q1" required><option value="">Select</option><option value="0">Asia</option><option value="1">Africa</option><option value="2">Australia</option><option value="3">Antarctica</option></select></li>
+            <li>The Great Wall is in which country?<br><select name="q2" required><option value="">Select</option><option value="0">Japan</option><option value="1">China</option><option value="2">India</option><option value="3">Mongolia</option></select></li>
+            <li>Which country has the longest coastline?<br><select name="q3" required><option value="">Select</option><option value="0">Australia</option><option value="1">Indonesia</option><option value="2">Canada</option><option value="3">Russia</option></select></li>
+            <li>Smallest country by land area?<br><select name="q4" required><option value="">Select</option><option value="0">Monaco</option><option value="1">Vatican City</option><option value="2">San Marino</option><option value="3">Liechtenstein</option></select></li>
+            <li>"Pearl of Africa"?<br><select name="q5" required><option value="">Select</option><option value="0">Kenya</option><option value="1">Uganda</option><option value="2">Tanzania</option><option value="3">Rwanda</option></select></li>
+            <li>Mount Everest countries?<br><select name="q6" required><option value="">Select</option><option value="0">India & China</option><option value="1">Nepal & India</option><option value="2">Nepal & China</option><option value="3">Bhutan & China</option></select></li>
+            <li>Largest ocean?<br><select name="q7" required><option value="">Select</option><option value="0">Atlantic</option><option value="1">Indian</option><option value="2">Pacific</option><option value="3">Arctic</option></select></li>
+            <li>Capital of Brazil?<br><select name="q8" required><option value="">Select</option><option value="0">Rio de Janeiro</option><option value="1">São Paulo</option><option value="2">Brasília</option><option value="3">Salvador</option></select></li>
+            <li>Kangaroos & koalas?<br><select name="q9" required><option value="">Select</option><option value="0">New Zealand</option><option value="1">Australia</option><option value="2">South Africa</option><option value="3">Indonesia</option></select></li>
         </ol>
         <br><br>
         <button type="submit">SUBMIT QUIZ</button>
         <a href="/userhome"><button type="button">Back to Home</button></a>
     </form>
+
+    <script>
+        let timeLeft = 60;
+        const timerDisplay = document.getElementById('timer');
+        const form = document.getElementById('quizForm');
+
+        const countdown = setInterval(() => {
+            timeLeft--;
+            timerDisplay.textContent = timeLeft;
+
+            if (timeLeft <= 10) {
+                timerDisplay.classList.add('warning');
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                alert("TIME'S UP! Submitting quiz...");
+                form.submit();
+            }
+        }, 1000);
+    </script>
 
     {% else %}
     <h2 style="font-size:3.5em; color:#1565c0;">Quiz Complete!</h2>
@@ -49,18 +91,21 @@
     <p style="font-size:2.5em; color:#1976d2;"><strong>Level: {{ level }}</strong></p>
     <p style="font-size:2em; color:#1565c0;"><strong>Personal Best: {{ high_score }}/10</strong></p>
 
+    <!-- TIME TAKEN -->
+    <p class="time">Time Taken: {{ time_taken }} seconds</p>
+
     {% if perfect %}
     <div class="perfect">
         PERFECT SCORE!<br>
         <a href="/advanced_quiz" style="color:red; font-size:1.2em; text-decoration:none;">
-            UNLOCKED: ADVANCED CHALLENGE →
+            UNLOCKED: ADVANCED CHALLENGE
         </a>
     </div>
     {% endif %}
 
     {% if wrong_questions %}
     <h3 style="color:#d32f2f; font-size:2em;">Questions You Got Wrong:</h3>
-    <div style="background:#fff5f5; padding:30px; border-radius:20px; text-align:left; font-size:1.4em; margin:20px;">
+    <div style="background:#fff5f5; padding:30px; border-radius:20px; text-align:left; font-size:1.4em;">
         {% for q in wrong_questions %}
         <p>Q{{ q.num }}: <span class="wrong">You: {{ q.your_answer }}</span> → <span class="correct">Correct: {{ q.correct_answer }}</span></p>
         {% endfor %}
