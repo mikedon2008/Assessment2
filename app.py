@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.secret_key = 'mikedon-geography-quiz-final-2025'
 
 # ========================================
-# DATABASE SETUP 
+# DATABASE SETUP
 # ========================================
 def init_db():
     conn = sqlite3.connect('database.db')
@@ -28,11 +28,20 @@ def init_db():
                  score INTEGER,
                  level TEXT,
                  timestamp TEXT,
-                 time_taken INTEGER DEFAULT 0)''')  
+                 time_taken INTEGER DEFAULT 0)''')
     c.execute('INSERT OR IGNORE INTO users (username, password, is_admin) VALUES (?, ?, ?)',
               ('nguyen.don225@education.nsw.gov.au', 'Duc10042008@', 1))
     conn.commit()
     conn.close()
+
+# Helper function to check if a user is admin
+def is_user_admin(username):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT is_admin FROM users WHERE username = ?", (username,))
+    result = c.fetchone()
+    conn.close()
+    return result and result[0] == 1
 
 # ========================================
 # ALL ROUTES
@@ -94,14 +103,35 @@ def super_admin_panel():
     if session.get('username') != 'nguyen.don225@education.nsw.gov.au':
         flash("Access Denied")
         return redirect(url_for('user_home'))
+    
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("""SELECT r.id, u.username, r.score, r.level, r.timestamp, r.time_taken 
-                 FROM records r JOIN users u ON r.user_id = u.id 
+    c.execute("""SELECT r.id, u.username, r.score, r.level, r.timestamp, r.time_taken
+                 FROM records r JOIN users u ON r.user_id = u.id
                  ORDER BY r.timestamp DESC""")
     records = c.fetchall()
     conn.close()
-    return render_template('super_admin_panel.html', records=records)
+    
+    return render_template('super_admin_panel.html', records=records, is_admin=is_user_admin)
+
+# NEW: Promote user to admin
+@app.route('/make_admin/<username>', methods=['POST'])
+def make_admin(username):
+    if session.get('username') != 'nguyen.don225@education.nsw.gov.au':
+        flash("Access Denied: Only Super Admin can promote users.")
+        return redirect(url_for('user_home'))
+    
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("UPDATE users SET is_admin = 1 WHERE username = ?", (username,))
+    if c.rowcount > 0:
+        conn.commit()
+        flash(f"Success! {username} is now an Admin.")
+    else:
+        flash(f"User {username} not found.")
+    conn.close()
+    
+    return redirect(url_for('super_admin_panel'))
 
 @app.route('/userhome')
 def user_home():
@@ -141,7 +171,6 @@ def collecting_data():
         ["New Zealand", "Australia", "South Africa", "Indonesia"]
     ]
 
-    # Start timer when quiz loads
     if request.method == 'GET':
         session['quiz_start_time'] = datetime.now().timestamp()
 
@@ -152,7 +181,6 @@ def collecting_data():
     high_score = best if best else 0
 
     if request.method == 'POST':
-        # Calculate time taken
         start_time = session.get('quiz_start_time', datetime.now().timestamp())
         time_taken = int(datetime.now().timestamp() - start_time)
 
@@ -177,7 +205,6 @@ def collecting_data():
         conn.commit()
         conn.close()
 
-        # Clear timer from session
         session.pop('quiz_start_time', None)
 
         return render_template('collectingData.html',
@@ -254,7 +281,7 @@ def advanced_quiz():
     return render_template('advanced_quiz.html', submitted=False, high_score=high_score)
 
 # ========================================
-# RUN APP — WORKS ON MAC & RENDER.COM
+# RUN APP
 # ========================================
 if __name__ == '__main__':
     init_db()

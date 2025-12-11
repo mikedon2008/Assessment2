@@ -1,119 +1,103 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>MIKEDON GEOGRAPHY QUIZ - Admin Dashboard</title>
-    <link rel="stylesheet" href="/static/styles.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-            font-family: Arial, sans-serif;
-            padding: 40px;
-        }
-        .admin-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 15px 40px rgba(30, 144, 255, 0.2);
-            border: 4px solid #1e88e5;
-        }
-        h1 {
-            text-align: center;
-            color: #1565c0;
-            font-size: 3em;
-            margin-bottom: 10px;
-        }
-        .logout {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .logout a {
-            color: #1976d2;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 1.2em;
-        }
-        .logout a:hover { text-decoration: underline; }
-        h2 {
-            text-align: center;
-            color: #0d47a1;
-            margin: 30px 0 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            font-size: 1.1em;
-        }
-        th {
-            background: #1e88e5;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-weight: bold;
-        }
-        td {
-            padding: 14px;
-            text-align: center;
-            border-bottom: 1px solid #bbdefb;
-        }
-        tr:nth-child(even) {
-            background-color: #f5fbff;
-        }
-        tr:hover {
-            background-color: #e3f2fd;
-        }
-        .highlight {
-            background-color: #e8f5e8 !important;
-            font-weight: bold;
-            color: #0d47a1;
-        }
-        .time-taken {
-            font-weight: bold;
-            color: #d32f2f;
-        }
-    </style>
+   <title>MIKEDON GEOGRAPHY QUIZ - Admin Dashboard</title>
+   <link rel="stylesheet" href="/static/styles.css">
+   <style>
+       body { background: linear-gradient(135deg, #e3f2fd, #bbdefb); font-family: Arial, sans-serif; padding: 40px; }
+
+       .admin-container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 15px 40px rgba(30, 144, 255, 0.2); border: 4px solid #1e88e5; }
+       h1 { text-align: center; color: #1565c0; font-size: 3em; margin-bottom: 10px; }
+
+       .logout { text-align: center; margin-bottom: 30px; }
+
+       .logout a { color: #1976d2; font-weight: bold; text-decoration: none; font-size: 1.2em; }
+
+       .logout a:hover { text-decoration: underline; }
+
+       h2 { text-align: center; color: #0d47a1; margin: 30px 0 20px; }
+
+       table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 1.1em; }
+
+       th { background: #1e88e5; color: white; padding: 15px; text-align: center; font-weight: bold; }
+
+       td { padding: 14px; text-align: center; border-bottom: 1px solid #bbdefb; }
+
+       tr:nth-child(even) { background-color: #f5fbff; }
+
+       tr:hover { background-color: #e3f2fd; }
+
+       .highlight { background-color: #e8f5e8 !important; font-weight: bold; color: #0d47a1; }
+
+       .time-taken { font-weight: bold; color: #d32f2f; }
+
+       .admin-btn { background: #4caf50; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9em; }
+
+       .admin-btn:hover { background: #388e3c; }
+
+       .already-admin { background: #9e9e9e; cursor: not-allowed; }
+       
+   </style>
 </head>
 <body>
 <div class="admin-container">
-    <h1>Admin Dashboard</h1>
-    
-    <div class="logout">
-        <a href="/logout">Logout</a>
-    </div>
+   <h1>Super Admin Dashboard</h1>
+  
+   <div class="logout">
+       <a href="/logout">Logout</a>
+   </div>
 
-    <h2>All User Records (Including Time Taken)</h2>
+   <h2>All User Records (Including Time Taken)</h2>
 
-    <table>
-        <tr>
-            <th>#</th>
-            <th>Username</th>
-            <th>Score</th>
-            <th>Level</th>
-            <th>Date & Time</th>
-            <th>Time Taken</th>
-        </tr>
-        {% for record in records %}
-        <tr {% if record[1] == 'mickeydon2008@gmail.com' or record[1] == 'nguyen.don225@education.nsw.gov.au' %}class="highlight"{% endif %}>
-            <td>{{ loop.index }}</td>
-            <td>{{ record[1] }}</td>
-            <td>{{ record[2] }}/10</td>
-            <td>{{ record[3] }}</td>
-            <td>{{ record[4] }}</td>
-            <td class="time-taken">{{ record[5] }} seconds</td>
-        </tr>
-        {% endfor %}
-    </table>
+   <table>
+       <tr>
+           <th>#</th>
+           <th>Username</th>
+           <th>Score</th>
+           <th>Level</th>
+           <th>Date & Time</th>
+           <th>Time Taken</th>
+           <th>Status</th>
+           <th>Action</th>
+       </tr>
+       {% for record in records %}
+       <tr {% if record[1] in ['mickeydon2008@gmail.com', 'nguyen.don225@education.nsw.gov.au'] %}class="highlight"{% endif %}>
+           <td>{{ loop.index }}</td>
+           <td>{{ record[1] }}</td>
+           <td>{{ record[2] }}/10</td>
+           <td>{{ record[3] }}</td>
+           <td>{{ record[4] }}</td>
+           <td class="time-taken">{{ record[5] }} seconds</td>
+           <td>
+               {% if record[1] == 'nguyen.don225@education.nsw.gov.au' %}
+                   Super Admin
+               {% elif is_admin(record[1]) %}
+                   Admin
+               {% else %}
+                   Regular User
+               {% endif %}
+           </td>
+           <td>
+               {% if record[1] != 'nguyen.don225@education.nsw.gov.au' and not is_admin(record[1]) %}
+                   <form method="post" action="/make_admin/{{ record[1] }}" style="display:inline;">
+                       <button type="submit" class="admin-btn">Make Admin</button>
+                   </form>
+               {% else %}
+                   <button class="admin-btn already-admin" disabled>Cannot Change</button>
+               {% endif %}
+           </td>
+       </tr>
+       {% endfor %}
+   </table>
 
-    <br><br>
-    <p style="text-align:center;">
-        <a href="/userhome">
-            <button style="padding:15px 40px; font-size:1.3em; background:#1e88e5; color:white; border:none; border-radius:50px; cursor:pointer;">
-                Back to Dashboard
-            </button>
-        </a>
-    </p>
+   <br><br>
+   <p style="text-align:center;">
+       <a href="/userhome">
+           <button style="padding:15px 40px; font-size:1.3em; background:#1e88e5; color:white; border:none; border-radius:50px; cursor:pointer;">
+               Back to Dashboard
+           </button>
+       </a>
+   </p>
 </div>
 </body>
 </html>
