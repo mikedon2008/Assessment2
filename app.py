@@ -114,7 +114,6 @@ def super_admin_panel():
     
     return render_template('super_admin_panel.html', records=records, is_admin=is_user_admin)
 
-# NEW: Promote user to admin
 @app.route('/make_admin/<username>', methods=['POST'])
 def make_admin(username):
     if session.get('username') != 'nguyen.don225@education.nsw.gov.au':
@@ -157,7 +156,7 @@ def collecting_data():
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    correct = [2, 3, 1, 2, 1, 1, 2, 2, 2, 1]
+    correct = [2, 1, 1, 2, 1, 1, 2, 2, 2, 1]
     options = [
         ["Sydney", "Melbourne", "Canberra", "Brisbane"],
         ["Asia", "Africa", "Australia", "Antarctica"],
