@@ -3,7 +3,6 @@ import sqlite3
 from datetime import datetime
 import os
 
-# Only import waitress when on Render.com
 if os.environ.get('RENDER'):
     from waitress import serve
 
@@ -34,7 +33,7 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Helper function to check if a user is admin
+# Helper: check if user is admin
 def is_user_admin(username):
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
@@ -44,7 +43,7 @@ def is_user_admin(username):
     return result and result[0] == 1
 
 # ========================================
-# ALL ROUTES
+# ROUTES
 # ========================================
 @app.route('/')
 def index():
@@ -88,6 +87,7 @@ def login():
         flash("Wrong username/password")
     return render_template('login.html')
 
+# Super Admin Secret Question
 @app.route('/admin_security', methods=['GET', 'POST'])
 def admin_security():
     if session.get('username') != 'nguyen.don225@education.nsw.gov.au':
@@ -98,12 +98,15 @@ def admin_security():
         flash("WRONG! NOT MIKEDON.")
     return render_template('admin_security.html')
 
+# Admin Panel — Super Admin + Normal Admins can VIEW
 @app.route('/super_admin_panel')
 def super_admin_panel():
-    if session.get('username') != 'nguyen.don225@education.nsw.gov.au':
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    if not (session['username'] == 'nguyen.don225@education.nsw.gov.au' or session.get('is_admin')):
         flash("Access Denied")
         return redirect(url_for('user_home'))
-    
+
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
     c.execute("""SELECT r.id, u.username, r.score, r.level, r.timestamp, r.time_taken
@@ -111,25 +114,41 @@ def super_admin_panel():
                  ORDER BY r.timestamp DESC""")
     records = c.fetchall()
     conn.close()
-    
+
     return render_template('super_admin_panel.html', records=records, is_admin=is_user_admin)
 
+# Make Admin (only Super Admin)
 @app.route('/make_admin/<username>', methods=['POST'])
 def make_admin(username):
     if session.get('username') != 'nguyen.don225@education.nsw.gov.au':
-        flash("Access Denied: Only Super Admin can promote users.")
+        flash("Only Super Admin can promote users.")
         return redirect(url_for('user_home'))
-    
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
     c.execute("UPDATE users SET is_admin = 1 WHERE username = ?", (username,))
     if c.rowcount > 0:
         conn.commit()
-        flash(f"Success! {username} is now an Admin.")
+        flash(f"{username} is now an Admin.")
     else:
-        flash(f"User {username} not found.")
+        flash("User not found.")
     conn.close()
-    
+    return redirect(url_for('super_admin_panel'))
+
+# Remove Admin (only Super Admin)
+@app.route('/remove_admin/<username>', methods=['POST'])
+def remove_admin(username):
+    if session.get('username') != 'nguyen.don225@education.nsw.gov.au':
+        flash("Only Super Admin can remove admin rights.")
+        return redirect(url_for('user_home'))
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("UPDATE users SET is_admin = 0 WHERE username = ?", (username,))
+    if c.rowcount > 0:
+        conn.commit()
+        flash(f"{username} is no longer an admin.")
+    else:
+        flash("User not found.")
+    conn.close()
     return redirect(url_for('super_admin_panel'))
 
 @app.route('/userhome')
@@ -149,14 +168,14 @@ def logout():
     return redirect(url_for('login'))
 
 # ========================================
-# NORMAL QUIZ WITH TIMER
+# NORMAL QUIZ
 # ========================================
 @app.route('/collectingdata', methods=['GET', 'POST'])
 def collecting_data():
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    correct = [2, 1, 1, 2, 1, 1, 2, 2, 2, 1]
+    correct = [2, 3, 1, 2, 1, 1, 2, 2, 2, 1]
     options = [
         ["Sydney", "Melbourne", "Canberra", "Brisbane"],
         ["Asia", "Africa", "Australia", "Antarctica"],
@@ -182,7 +201,6 @@ def collecting_data():
     if request.method == 'POST':
         start_time = session.get('quiz_start_time', datetime.now().timestamp())
         time_taken = int(datetime.now().timestamp() - start_time)
-
         score = 0
         wrong_questions = []
         for i in range(10):
@@ -203,7 +221,6 @@ def collecting_data():
                   (session['user_id'], score, level, datetime.now().strftime("%Y-%m-%d %H:%M"), time_taken))
         conn.commit()
         conn.close()
-
         session.pop('quiz_start_time', None)
 
         return render_template('collectingData.html',
@@ -215,7 +232,7 @@ def collecting_data():
     return render_template('collectingData.html', submitted=False, high_score=high_score)
 
 # ========================================
-# ADVANCED QUIZ WITH TIMER
+# ADVANCED QUIZ
 # ========================================
 @app.route('/advanced_quiz', methods=['GET', 'POST'])
 def advanced_quiz():
@@ -248,7 +265,6 @@ def advanced_quiz():
     if request.method == 'POST':
         start_time = session.get('quiz_start_time', datetime.now().timestamp())
         time_taken = int(datetime.now().timestamp() - start_time)
-
         score = 0
         wrong_questions = []
         for i in range(10):
@@ -268,7 +284,6 @@ def advanced_quiz():
                   (session['user_id'], score, level + " (Advanced)", datetime.now().strftime("%Y-%m-%d %H:%M"), time_taken))
         conn.commit()
         conn.close()
-
         session.pop('quiz_start_time', None)
 
         return render_template('advanced_quiz.html',
