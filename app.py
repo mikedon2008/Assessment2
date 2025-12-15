@@ -9,9 +9,13 @@ if os.environ.get('RENDER'):
 app = Flask(__name__)
 app.secret_key = 'mikedon-geography-quiz-final-2025'
 
+
+
+
 # ========================================
 # DATABASE SETUP
 # ========================================
+
 def init_db():
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
@@ -45,6 +49,7 @@ def is_user_admin(username):
 # ========================================
 # ROUTES
 # ========================================
+
 @app.route('/')
 def index():
     return redirect(url_for('login'))
