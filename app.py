@@ -9,13 +9,9 @@ if os.environ.get('RENDER'):
 app = Flask(__name__)
 app.secret_key = 'mikedon-geography-quiz-final-2025'
 
-
-
-
 # ========================================
 # DATABASE SETUP
 # ========================================
-
 def init_db():
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
@@ -49,7 +45,6 @@ def is_user_admin(username):
 # ========================================
 # ROUTES
 # ========================================
-
 @app.route('/')
 def index():
     return redirect(url_for('login'))
@@ -86,13 +81,16 @@ def login():
             session['user_id'] = user[0]
             session['username'] = user[1]
             session['is_admin'] = bool(user[2])
+
             if username == 'nguyen.don225@education.nsw.gov.au':
                 return redirect(url_for('admin_security'))
-            return redirect(url_for('user_home'))
+            elif session['is_admin']:
+                return redirect(url_for('super_admin_panel'))
+            else:
+                return redirect(url_for('user_home'))
         flash("Wrong username/password")
     return render_template('login.html')
 
-# Super Admin Secret Question
 @app.route('/admin_security', methods=['GET', 'POST'])
 def admin_security():
     if session.get('username') != 'nguyen.don225@education.nsw.gov.au':
@@ -103,13 +101,12 @@ def admin_security():
         flash("WRONG! NOT MIKEDON.")
     return render_template('admin_security.html')
 
-# Admin Panel — Super Admin + Normal Admins can VIEW
 @app.route('/super_admin_panel')
 def super_admin_panel():
     if 'username' not in session:
         return redirect(url_for('login'))
-    if not (session['username'] == 'nguyen.don225@education.nsw.gov.au' or session.get('is_admin')):
-        flash("Access Denied")
+    if not session.get('is_admin'):
+        flash("Access Denied — Admin rights required")
         return redirect(url_for('user_home'))
 
     conn = sqlite3.connect('database.db')
@@ -122,7 +119,6 @@ def super_admin_panel():
 
     return render_template('super_admin_panel.html', records=records, is_admin=is_user_admin)
 
-# Make Admin (only Super Admin)
 @app.route('/make_admin/<username>', methods=['POST'])
 def make_admin(username):
     if session.get('username') != 'nguyen.don225@education.nsw.gov.au':
@@ -139,7 +135,6 @@ def make_admin(username):
     conn.close()
     return redirect(url_for('super_admin_panel'))
 
-# Remove Admin (only Super Admin)
 @app.route('/remove_admin/<username>', methods=['POST'])
 def remove_admin(username):
     if session.get('username') != 'nguyen.don225@education.nsw.gov.au':
@@ -237,17 +232,17 @@ def collecting_data():
     return render_template('collectingData.html', submitted=False, high_score=high_score)
 
 # ========================================
-# ADVANCED QUIZ
+# ADVANCED QUIZ — FIXED: Antarctica is correct for most desert area
 # ========================================
 @app.route('/advanced_quiz', methods=['GET', 'POST'])
 def advanced_quiz():
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    correct = [2, 2, 1, 2, 1, 1, 1, 1, 2, 0]
+    correct = [2, 3, 1, 2, 1, 1, 1, 1, 2, 0]  # Q2 correct = Antarctica (index 3)
     options = [
         ["Switzerland", "Italy", "Russia", "France"],
-        ["Russia", "United States", "France", "China"],
+        ["Australia", "Africa", "Asia", "Antarctica"],  # Antarctica is correct
         ["Caspian Sea", "Lake Baikal", "Lake Tanganyika", "Crater Lake"],
         ["Nile", "Amazon", "Danube", "Rhine"],
         ["Iraq", "Iran", "Azerbaijan", "Turkmenistan"],
